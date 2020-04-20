@@ -9,6 +9,8 @@ import 'package:flutter/widgets.dart';
 
 enum _ExpandMode { ShowHide, MaxHeight }
 
+typedef ArrowBuilder = Widget Function(bool expand);
+
 class ExpandWidget extends StatefulWidget {
   /// Color of the default arrow widget.
   final Color arrowColor;
@@ -16,17 +18,20 @@ class ExpandWidget extends StatefulWidget {
   /// Size of the default arrow widget. Default is 30.
   final double arrowSize;
 
-  /// Custom arrow widget, will using [ExpandIcon] if this is null.
-  final Widget arrowWidget;
+  /// Custom arrow widget builder, will using [ExpandIcon] if this is null.
+  final ArrowBuilder arrowWidgetBuilder;
 
-  /// How long the expanding animation takes. Default is 300ms.
+  /// If you use [arrowWidgetBuilder], you should provide the height of arrow widget manually
+  final double arrowWidgetHeight;
+
+  /// How long the expanding animation takes. Default is 150ms.
   final Duration animationDuration;
 
   /// Child
   final Widget child;
 
   ///Max Height of widget that will show by default. Default is 100
-  final maxHeight;
+  final double maxHeight;
 
   ///Whether to keep this widget alive or not, if you use this widget in scroll view, it should be true
   ///to avoid scroll problems
@@ -41,11 +46,12 @@ class ExpandWidget extends StatefulWidget {
       {Key key,
       this.arrowColor,
       this.arrowSize = 30,
-      this.arrowWidget,
-      this.animationDuration = const Duration(milliseconds: 300),
+      this.arrowWidgetBuilder,
+      this.arrowWidgetHeight,
+      this.animationDuration = const Duration(milliseconds: 150),
       @required this.child,
       this.keepAlive = false})
-      : maxHeight = null,
+      : maxHeight = 0,
         _mode = _ExpandMode.ShowHide,
         super(key: key);
 
@@ -56,7 +62,8 @@ class ExpandWidget extends StatefulWidget {
       {Key key,
       this.arrowColor,
       this.arrowSize = 30,
-      this.arrowWidget,
+      this.arrowWidgetBuilder,
+      this.arrowWidgetHeight,
       this.animationDuration = const Duration(milliseconds: 300),
       @required this.child,
       this.maxHeight = 100.0,
@@ -69,111 +76,83 @@ class ExpandWidget extends StatefulWidget {
 }
 
 class _ExpandWidgetState extends State<ExpandWidget>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  /// animation controller
-  AnimationController _controller;
-
-  /// Animations for height control
-  Animation<double> _heightFactor;
-
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   /// Expand status
   bool _isExpanded = false;
 
-  ///Whether enable expandable mode or not, will show child directly if not
-  bool _enableExpand;
+  /// The height of arrow
+  double _arrowHeight;
 
-  GlobalKey _key = GlobalKey();
+  /// Whether is show hide Mode or max height mode.
+  bool _isShowHideMode;
 
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      duration: widget.animationDuration,
-      vsync: this,
-    );
-
-    //Calculating the height of child, and then decide to enable expand or not.
-    if (widget._mode == _ExpandMode.MaxHeight) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_enableExpand != null) return;
-        final RenderBox box = _key.currentContext?.findRenderObject();
-        if (box == null) return;
-        final height = box.size.height;
-        if (height > widget.maxHeight) {
-          setState(() {
-            _enableExpand = true;
-            _heightFactor = Tween(begin: widget.maxHeight / height, end: 1.0)
-                .animate(_controller);
-          });
-        } else {
-          _enableExpand = false;
-        }
-      });
-    } else {
-      _enableExpand = true;
-      _heightFactor = Tween(begin: 0.0, end: 1.0).animate(_controller);
+    if(widget.arrowWidgetBuilder!=null && widget.arrowWidgetHeight == null){
+      throw FlutterError("Should provide the height of arrowWidget");
     }
+    _arrowHeight = widget.arrowWidgetHeight ?? 48;
+    _isShowHideMode = widget._mode == _ExpandMode.ShowHide;
+
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return AnimatedBuilder(
-      animation: _controller.view,
-      builder: _buildChild,
-      child: widget.child,
+    return AnimatedSize(
+      duration: widget.animationDuration,
+      vsync: this,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+            maxHeight: !_isExpanded
+                ? widget.maxHeight + _arrowHeight
+                : double.infinity),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            LimitedBox(
+              maxHeight:  !_isExpanded ? widget.maxHeight : double.infinity,
+              child: widget.child,
+            ),
+            Flexible(child: LayoutBuilder(
+              builder: (_, size) {
+                final height = size.biggest.height;
+                return _isShowHideMode || height <= _arrowHeight || height.isInfinite
+                    ? UnconstrainedBox(
+                        constrainedAxis: Axis.horizontal,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: widget.arrowWidgetBuilder != null
+                              ? GestureDetector(
+                                  behavior: HitTestBehavior.deferToChild,
+                                  onTap: _onTap,
+                                  child: widget.arrowWidgetBuilder(_isExpanded),
+                                )
+                              : ExpandIcon(
+                                  onPressed: (_) => _onTap(),
+                                  size: widget.arrowSize,
+                                  color: widget.arrowColor,
+                                  isExpanded: _isExpanded,
+                                ),
+                        ),
+                      )
+                    : SizedBox();
+              },
+            )),
+          ],
+        ),
+      ),
     );
   }
-
-  ///build child
-  Widget _buildChild(BuildContext context, Widget child) {
-    return Column(
-      children: <Widget>[
-        ClipRect(
-          child: Align(
-            key: _key,
-            alignment: Alignment.topCenter,
-            heightFactor: _enableExpand == null || !_enableExpand
-                ? 1
-                : _heightFactor.value,
-            child: child,
-          ),
-        ),
-        Offstage(
-            offstage: _enableExpand == null || !_enableExpand,
-            child: widget.arrowWidget != null
-                ? GestureDetector(
-              behavior: HitTestBehavior.deferToChild,
-              onTap: _onTap,
-              child: widget.arrowWidget,
-            )
-                : ExpandIcon(
-              onPressed: (_)=>_onTap(),
-              size: widget.arrowSize,
-              color: widget.arrowColor,
-              isExpanded: _isExpanded,
-            )
-        ),
-      ],
-    );
-  }
-
 
   /// User clicks the arrow
   void _onTap() {
     setState(() {
       _isExpanded = !_isExpanded;
-      _isExpanded ? _controller.forward() : _controller.reverse();
     });
   }
 
   @override
   bool get wantKeepAlive => widget.keepAlive;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 }
