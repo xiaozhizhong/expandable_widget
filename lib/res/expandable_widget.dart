@@ -1,24 +1,26 @@
 ///
 ///@author xiaozhizhong
 ///@date 2020/4/17
-///@description
+///@description Expandable widget
 ///
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:expandable_widget/res/expand_arrow.dart';
+
 
 enum _ExpandMode { ShowHide, MaxHeight }
 
 typedef ArrowBuilder = Widget Function(bool expand);
 
-class ExpandWidget extends StatefulWidget {
+class ExpandableWidget extends StatefulWidget {
   /// Color of the default arrow widget.
   final Color arrowColor;
 
-  /// Size of the default arrow widget. Default is 30.
+  /// Size of the default arrow widget. Default is 24.
   final double arrowSize;
 
-  /// Custom arrow widget builder, will using [ExpandIcon] if this is null.
+  /// Custom arrow widget builder, will using [ExpandArrow] if this is null.
   final ArrowBuilder arrowWidgetBuilder;
 
   /// If you use [arrowWidgetBuilder], you should provide the height of arrow widget manually
@@ -33,24 +35,20 @@ class ExpandWidget extends StatefulWidget {
   ///Max Height of widget that will show by default. Default is 100
   final double maxHeight;
 
-  ///Whether to keep this widget alive or not, if you use this widget in scroll view, it should be true
-  ///to avoid scroll problems
-  final bool keepAlive;
-
   ///Expand mode, {showHide} or {maxHeight}
   final _ExpandMode _mode;
 
   ///Show and hide.
   ///Using this constructor if you want to hide child completely by default.
-  const ExpandWidget.showHide(
+  const ExpandableWidget.showHide(
       {Key key,
       this.arrowColor,
-      this.arrowSize = 30,
+      this.arrowSize = 24,
       this.arrowWidgetBuilder,
       this.arrowWidgetHeight,
       this.animationDuration = const Duration(milliseconds: 150),
       @required this.child,
-      this.keepAlive = false})
+      })
       : maxHeight = 0,
         _mode = _ExpandMode.ShowHide,
         super(key: key);
@@ -58,25 +56,24 @@ class ExpandWidget extends StatefulWidget {
   ///Set up max height.
   ///Using this constructor if you want to show a max-height child by default.
   ///If the child's height < [maxHeight], then will show child directly
-  const ExpandWidget.maxHeight(
+  const ExpandableWidget.maxHeight(
       {Key key,
       this.arrowColor,
-      this.arrowSize = 30,
+      this.arrowSize = 24,
       this.arrowWidgetBuilder,
       this.arrowWidgetHeight,
       this.animationDuration = const Duration(milliseconds: 300),
       @required this.child,
-      this.maxHeight = 100.0,
-      this.keepAlive = false})
+      this.maxHeight = 100.0})
       : _mode = _ExpandMode.MaxHeight,
         super(key: key);
 
   @override
-  _ExpandWidgetState createState() => _ExpandWidgetState();
+  _ExpandableWidgetState createState() => _ExpandableWidgetState();
 }
 
-class _ExpandWidgetState extends State<ExpandWidget>
-    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class _ExpandableWidgetState extends State<ExpandableWidget>
+    with SingleTickerProviderStateMixin{
   /// Expand status
   bool _isExpanded = false;
 
@@ -99,7 +96,6 @@ class _ExpandWidgetState extends State<ExpandWidget>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return AnimatedSize(
       duration: widget.animationDuration,
       vsync: this,
@@ -129,7 +125,7 @@ class _ExpandWidgetState extends State<ExpandWidget>
                                   onTap: _onTap,
                                   child: widget.arrowWidgetBuilder(_isExpanded),
                                 )
-                              : ExpandIcon(
+                              : ExpandArrow(
                                   onPressed: (_) => _onTap(),
                                   size: widget.arrowSize,
                                   color: widget.arrowColor,
@@ -153,6 +149,4 @@ class _ExpandWidgetState extends State<ExpandWidget>
     });
   }
 
-  @override
-  bool get wantKeepAlive => widget.keepAlive;
 }
