@@ -59,7 +59,7 @@ class ExpandWidget extends StatefulWidget {
       this.arrowWidget,
       this.animationDuration = const Duration(milliseconds: 300),
       @required this.child,
-      this.maxHeight = 100,
+      this.maxHeight = 100.0,
       this.keepAlive = false})
       : _mode = _ExpandMode.MaxHeight,
         super(key: key);
