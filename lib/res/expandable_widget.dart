@@ -121,7 +121,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
                           width: double.infinity,
                           child: widget.arrowWidgetBuilder != null
                               ? GestureDetector(
-                                  behavior: HitTestBehavior.deferToChild,
+                                  behavior: HitTestBehavior.translucent,
                                   onTap: _onTap,
                                   child: widget.arrowWidgetBuilder(_isExpanded),
                                 )
