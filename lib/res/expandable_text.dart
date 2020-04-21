@@ -110,6 +110,7 @@ class _ExpandableTextState extends State<ExpandableText>
           else
             return AnimatedSize(
                 duration: widget.animationDuration,
+                reverseDuration: widget.animationDuration,
                 vsync: this,
                 alignment: Alignment.topCenter,
                 child: Column(

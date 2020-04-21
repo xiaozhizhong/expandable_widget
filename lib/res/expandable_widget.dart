@@ -95,6 +95,8 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
   Widget build(BuildContext context) {
     return AnimatedSize(
       duration: widget.animationDuration,
+      reverseDuration: widget.animationDuration,
+      alignment: Alignment.bottomCenter,
       vsync: this,
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -103,6 +105,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
                 : double.infinity),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             LimitedBox(
               maxHeight: !_isExpanded ? widget.maxHeight : double.infinity,
@@ -114,9 +117,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
                 return _isShowHideMode ||
                         height <= _arrowHeight ||
                         height.isInfinite
-                    ? UnconstrainedBox(
-                        constrainedAxis: Axis.horizontal,
-                        child: SizedBox(
+                    ? SizedBox(
                           width: double.infinity,
                           child: widget.arrowWidgetBuilder != null
                               ? GestureDetector(
@@ -130,8 +131,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
                                   color: widget.arrowColor,
                                   isExpanded: _isExpanded,
                                 ),
-                        ),
-                      )
+                        )
                     : SizedBox();
               },
             )),
