@@ -166,7 +166,7 @@ class _ExpandIconState extends State<ExpandArrow>
         onPressed: widget.onPressed == null ? null : _handlePressed,
         icon: RotationTransition(
           turns: _iconTurns,
-          child:  Icon(Icons.expand_more, size: widget.size),
+          child: Icon(Icons.expand_more, size: widget.size),
         ),
       ),
     );

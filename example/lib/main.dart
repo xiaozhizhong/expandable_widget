@@ -97,10 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       height: _arrowHeight,
       alignment: Alignment.center,
-      child:
-        Text(expanded ? "hide" : "show",style: TextStyle(
-          color: Colors.blueAccent
-        ),),
+      child: Text(
+        expanded ? "hide" : "show",
+        style: TextStyle(color: Colors.blueAccent),
+      ),
     );
   }
 }

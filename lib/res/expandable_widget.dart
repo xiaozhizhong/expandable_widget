@@ -8,7 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:expandable_widget/res/expand_arrow.dart';
 
-
 enum _ExpandMode { ShowHide, MaxHeight }
 
 typedef ArrowBuilder = Widget Function(bool expand);
@@ -40,16 +39,15 @@ class ExpandableWidget extends StatefulWidget {
 
   ///Show and hide.
   ///Using this constructor if you want to hide child completely by default.
-  const ExpandableWidget.showHide(
-      {Key key,
-      this.arrowColor,
-      this.arrowSize = 24,
-      this.arrowWidgetBuilder,
-      this.arrowWidgetHeight,
-      this.animationDuration = const Duration(milliseconds: 150),
-      @required this.child,
-      })
-      : maxHeight = 0,
+  const ExpandableWidget.showHide({
+    Key key,
+    this.arrowColor,
+    this.arrowSize = 24,
+    this.arrowWidgetBuilder,
+    this.arrowWidgetHeight,
+    this.animationDuration = const Duration(milliseconds: 150),
+    @required this.child,
+  })  : maxHeight = 0,
         _mode = _ExpandMode.ShowHide,
         super(key: key);
 
@@ -73,7 +71,7 @@ class ExpandableWidget extends StatefulWidget {
 }
 
 class _ExpandableWidgetState extends State<ExpandableWidget>
-    with SingleTickerProviderStateMixin{
+    with SingleTickerProviderStateMixin {
   /// Expand status
   bool _isExpanded = false;
 
@@ -86,12 +84,11 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
   @override
   void initState() {
     super.initState();
-    if(widget.arrowWidgetBuilder!=null && widget.arrowWidgetHeight == null){
+    if (widget.arrowWidgetBuilder != null && widget.arrowWidgetHeight == null) {
       throw FlutterError("Should provide the height of arrowWidget");
     }
     _arrowHeight = widget.arrowWidgetHeight ?? 48;
     _isShowHideMode = widget._mode == _ExpandMode.ShowHide;
-
   }
 
   @override
@@ -108,13 +105,15 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             LimitedBox(
-              maxHeight:  !_isExpanded ? widget.maxHeight : double.infinity,
+              maxHeight: !_isExpanded ? widget.maxHeight : double.infinity,
               child: widget.child,
             ),
             Flexible(child: LayoutBuilder(
               builder: (_, size) {
                 final height = size.biggest.height;
-                return _isShowHideMode || height <= _arrowHeight || height.isInfinite
+                return _isShowHideMode ||
+                        height <= _arrowHeight ||
+                        height.isInfinite
                     ? UnconstrainedBox(
                         constrainedAxis: Axis.horizontal,
                         child: SizedBox(
@@ -148,5 +147,4 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
       _isExpanded = !_isExpanded;
     });
   }
-
 }
