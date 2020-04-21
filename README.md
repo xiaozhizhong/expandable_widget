@@ -60,24 +60,22 @@ Note: If you specified a custom arrow widget, you should also provide the height
 * **ExpandableText.showHide**
 
     Use this if you want to hide text completely at the beginning.
-    
-    ``` dart
+``` dart
     ExpandableText.showHide(
               "your text to show...",
             )
-    ```
+```
 In this case, will only show an expand arrow at the beginning. When clicked the expand arrow, text expanded and showed.
 
 * **ExpandableText.lines**
 
     Use this if you want to show a max-lines text at the beginning.
 If the text's lines < maxLines, then will show text directly.
-
-    ``` dart
+``` dart
 ExpandableText.lines(
               _text,
               lines: 4,
               arrowWidgetBuilder: (expanded) => _buildArrow(expanded),
             )
-    ```
-    In this case, will show a 4 lines text and an expand arrow at the beginning. When clicked the expand arrow, text expanded to it full lines.
+```
+In this case, will show a 4 lines text and an expand arrow at the beginning. When clicked the expand arrow, text expanded to it full lines.
