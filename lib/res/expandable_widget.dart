@@ -36,22 +36,22 @@ class ExpandableWidget extends StatefulWidget {
 
   ///Expand mode, {showHide} or {maxHeight}
   final _ExpandMode _mode;
-  
+
   ///Whether expand at the beginning or not, Default is false
   final bool expand;
 
   ///Show and hide.
   ///Using this constructor if you want to hide child completely by default.
-  const ExpandableWidget.showHide({
-    Key key,
-    this.arrowColor,
-    this.arrowSize = 24,
-    this.arrowWidgetBuilder,
-    this.arrowWidgetHeight,
-    this.animationDuration = const Duration(milliseconds: 150),
-    @required this.child,
-    this.expand = false
-  })  : maxHeight = 0,
+  const ExpandableWidget.showHide(
+      {Key key,
+      this.arrowColor,
+      this.arrowSize = 24,
+      this.arrowWidgetBuilder,
+      this.arrowWidgetHeight,
+      this.animationDuration = const Duration(milliseconds: 150),
+      @required this.child,
+      this.expand = false})
+      : maxHeight = 0,
         _mode = _ExpandMode.ShowHide,
         super(key: key);
 
@@ -77,7 +77,6 @@ class ExpandableWidget extends StatefulWidget {
 
 class _ExpandableWidgetState extends State<ExpandableWidget>
     with SingleTickerProviderStateMixin {
-  
   /// Expand status
   bool _isExpanded;
 
