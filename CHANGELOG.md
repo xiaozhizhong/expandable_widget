@@ -9,3 +9,8 @@
 ## [1.0.2] - 2020/4/21
 
 * animation improved.
+* change hitTestBehavior of custom arrow widget
+
+## [1.0.3] - 2020/4/21
+
+* add expand param.

@@ -12,20 +12,20 @@ enum _ExpandMode { ShowHide, Lines }
 class ExpandableText extends StatefulWidget {
   ///Show and hide.
   ///Using this constructor if you want to hide text completely by default.
-  ExpandableText.showHide(
-    this.text, {
-    this.arrowColor,
-    this.arrowSize = 24,
-    this.arrowWidgetBuilder,
-    this.animationDuration = const Duration(milliseconds: 150),
-    this.textStyle,
-    this.strutStyle,
-    this.textAlign = TextAlign.start,
-    this.textDirection = TextDirection.ltr,
-    this.locale,
-    this.textScaleFactor = 1,
-    this.textWidthBasis = TextWidthBasis.parent,
-  })  : lines = null,
+  ExpandableText.showHide(this.text,
+      {this.arrowColor,
+      this.arrowSize = 24,
+      this.arrowWidgetBuilder,
+      this.animationDuration = const Duration(milliseconds: 150),
+      this.textStyle,
+      this.strutStyle,
+      this.textAlign = TextAlign.start,
+      this.textDirection = TextDirection.ltr,
+      this.locale,
+      this.textScaleFactor = 1,
+      this.textWidthBasis = TextWidthBasis.parent,
+      this.expand = false})
+      : lines = null,
         expandMode = _ExpandMode.ShowHide;
 
   ///Set up collapse lines.
@@ -43,7 +43,8 @@ class ExpandableText extends StatefulWidget {
       this.textDirection = TextDirection.ltr,
       this.locale,
       this.textScaleFactor = 1,
-      this.textWidthBasis = TextWidthBasis.parent})
+      this.textWidthBasis = TextWidthBasis.parent,
+      this.expand = false})
       : expandMode = _ExpandMode.Lines;
 
   /// Color of the default arrow widget.
@@ -67,6 +68,9 @@ class ExpandableText extends StatefulWidget {
   /// Style of text
   final TextStyle textStyle;
 
+  ///Whether expand at the beginning or not, Default is false
+  final bool expand;
+
   /// Other text parameters, see[Text]
   final StrutStyle strutStyle;
   final TextAlign textAlign;
@@ -83,11 +87,12 @@ class ExpandableText extends StatefulWidget {
 
 class _ExpandableTextState extends State<ExpandableText>
     with SingleTickerProviderStateMixin {
-  bool _isExpanded = false;
+  bool _isExpanded;
 
   @override
   void initState() {
     super.initState();
+    _isExpanded = widget.expand;
   }
 
   @override

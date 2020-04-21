@@ -36,6 +36,9 @@ class ExpandableWidget extends StatefulWidget {
 
   ///Expand mode, {showHide} or {maxHeight}
   final _ExpandMode _mode;
+  
+  ///Whether expand at the beginning or not, Default is false
+  final bool expand;
 
   ///Show and hide.
   ///Using this constructor if you want to hide child completely by default.
@@ -47,6 +50,7 @@ class ExpandableWidget extends StatefulWidget {
     this.arrowWidgetHeight,
     this.animationDuration = const Duration(milliseconds: 150),
     @required this.child,
+    this.expand = false
   })  : maxHeight = 0,
         _mode = _ExpandMode.ShowHide,
         super(key: key);
@@ -62,7 +66,8 @@ class ExpandableWidget extends StatefulWidget {
       this.arrowWidgetHeight,
       this.animationDuration = const Duration(milliseconds: 300),
       @required this.child,
-      this.maxHeight = 100.0})
+      this.maxHeight = 100.0,
+      this.expand = false})
       : _mode = _ExpandMode.MaxHeight,
         super(key: key);
 
@@ -72,8 +77,9 @@ class ExpandableWidget extends StatefulWidget {
 
 class _ExpandableWidgetState extends State<ExpandableWidget>
     with SingleTickerProviderStateMixin {
+  
   /// Expand status
-  bool _isExpanded = false;
+  bool _isExpanded;
 
   /// The height of arrow
   double _arrowHeight;
@@ -87,6 +93,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
     if (widget.arrowWidgetBuilder != null && widget.arrowWidgetHeight == null) {
       throw FlutterError("Should provide the height of arrowWidget");
     }
+    _isExpanded = widget.expand;
     _arrowHeight = widget.arrowWidgetHeight ?? 48;
     _isShowHideMode = widget._mode == _ExpandMode.ShowHide;
   }
@@ -118,20 +125,20 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
                         height <= _arrowHeight ||
                         height.isInfinite
                     ? SizedBox(
-                          width: double.infinity,
-                          child: widget.arrowWidgetBuilder != null
-                              ? GestureDetector(
-                                  behavior: HitTestBehavior.translucent,
-                                  onTap: _onTap,
-                                  child: widget.arrowWidgetBuilder(_isExpanded),
-                                )
-                              : ExpandArrow(
-                                  onPressed: (_) => _onTap(),
-                                  size: widget.arrowSize,
-                                  color: widget.arrowColor,
-                                  isExpanded: _isExpanded,
-                                ),
-                        )
+                        width: double.infinity,
+                        child: widget.arrowWidgetBuilder != null
+                            ? GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _onTap,
+                                child: widget.arrowWidgetBuilder(_isExpanded),
+                              )
+                            : ExpandArrow(
+                                onPressed: (_) => _onTap(),
+                                size: widget.arrowSize,
+                                color: widget.arrowColor,
+                                isExpanded: _isExpanded,
+                              ),
+                      )
                     : SizedBox();
               },
             )),

@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ExpandableWidget.maxHeight(
               maxHeight: 50,
+              //expand: true,
               child: Container(
                 color: Colors.blue,
                 height: 100,
@@ -84,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ExpandableText.lines(
               _text,
+              //expand: true,
               lines: 4,
               arrowWidgetBuilder: (expanded) => _buildArrow(expanded),
             ),
