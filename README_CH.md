@@ -76,6 +76,5 @@ ExpandableText.lines(
               lines: 4,
               arrowWidgetBuilder: (expanded) => _buildArrow(expanded),
             )
-```
-
+    ```
     在这个例子中，初始会显示一个4行的文字以及一个展开箭头。点击箭头后，文字完全展开显示。

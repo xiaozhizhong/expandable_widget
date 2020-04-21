@@ -79,6 +79,5 @@ ExpandableText.lines(
               lines: 4,
               arrowWidgetBuilder: (expanded) => _buildArrow(expanded),
             )
-```
-
+    ```
     In this case, will show a 4 lines text and an expand arrow at the beginning. When clicked the expand arrow, text expanded to it full lines.
