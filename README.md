@@ -82,5 +82,7 @@ ExpandableText.lines(
 In this case, will show a 4 lines text and an expand arrow at the beginning. When clicked the expand arrow, text expanded to it full lines.
 
 ## Important Changes
+
 - add expand param
-From 1.0.3, you can specify default expand status by passing `expand` value.
+
+    From 1.0.3, you can specify default expand status by passing `expand` value.
