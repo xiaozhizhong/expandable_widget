@@ -7,11 +7,34 @@ import 'package:flutter/material.dart';
 ///@description Expandable widget
 ///
 
-enum _ExpandMode { ShowHide, Lines }
+enum _ExpandMode { Manual, ShowHide, Lines }
 
 class ExpandableText extends StatefulWidget {
-  ///Show and hide.
-  ///Using this constructor if you want to hide text completely by default.
+  ///Manual control
+  ///Show and hide text completely
+  ExpandableText.manual(this.text,
+      {@required this.expand,
+      @required this.vsync,
+      this.animationDuration = const Duration(milliseconds: 150),
+      this.textStyle,
+      this.strutStyle,
+      this.textAlign = TextAlign.start,
+      this.textDirection = TextDirection.ltr,
+      this.locale,
+      this.textScaleFactor = 1,
+      this.textWidthBasis = TextWidthBasis.parent,
+      this.alignment = Alignment.topCenter,
+      Key key})
+      : lines = null,
+        arrowColor = null,
+        arrowSize = null,
+        arrowWidgetBuilder = null,
+        expandMode = _ExpandMode.Manual,
+        super(key: key);
+
+  ///Auto control
+  ///Show and hide text completely.
+  ///With a arrow at the bottom.
   ExpandableText.showHide(this.text,
       {this.arrowColor,
       this.arrowSize = 24,
@@ -24,12 +47,16 @@ class ExpandableText extends StatefulWidget {
       this.locale,
       this.textScaleFactor = 1,
       this.textWidthBasis = TextWidthBasis.parent,
-      this.expand = false})
+      this.expand = false,
+      this.alignment = Alignment.topCenter,
+      Key key})
       : lines = null,
-        expandMode = _ExpandMode.ShowHide;
+        vsync = null,
+        expandMode = _ExpandMode.ShowHide,
+        super(key: key);
 
-  ///Set up collapse lines.
-  ///Using this constructor if you want to show a max-lines text by default.
+  ///Auto control
+  ///Collapse text to max lines.
   ///If the text's line < [maxLines], then will show text directly
   ExpandableText.lines(this.text,
       {@required this.lines,
@@ -44,8 +71,12 @@ class ExpandableText extends StatefulWidget {
       this.locale,
       this.textScaleFactor = 1,
       this.textWidthBasis = TextWidthBasis.parent,
-      this.expand = false})
-      : expandMode = _ExpandMode.Lines;
+      this.expand = false,
+      this.alignment = Alignment.topCenter,
+      Key key})
+      : vsync = null,
+        expandMode = _ExpandMode.Lines,
+        super(key: key);
 
   /// Color of the default arrow widget.
   final Color arrowColor;
@@ -68,8 +99,15 @@ class ExpandableText extends StatefulWidget {
   /// Style of text
   final TextStyle textStyle;
 
-  ///Whether expand at the beginning or not, Default is false
+  ///In manual mode, it control the expand status
+  ///In auto mode(showHide\lines), it decide Whether expand at the beginning or not, Default is false
   final bool expand;
+
+  /// Control the animation position
+  final Alignment alignment;
+
+  /// vsync provider for manual mode
+  final TickerProvider vsync;
 
   /// Other text parameters, see[Text]
   final StrutStyle strutStyle;
@@ -110,7 +148,7 @@ class _ExpandableTextState extends State<ExpandableText>
               textWidthBasis: widget.textWidthBasis);
           painter.layout(maxWidth: size.maxWidth);
           if (!painter.didExceedMaxLines &&
-              widget.expandMode != _ExpandMode.ShowHide)
+              widget.expandMode == _ExpandMode.Lines)
             return _buildText();
           else
             return AnimatedSize(
@@ -118,43 +156,58 @@ class _ExpandableTextState extends State<ExpandableText>
                 reverseDuration: widget.animationDuration,
                 vsync: this,
                 alignment: Alignment.topCenter,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    widget.expandMode == _ExpandMode.ShowHide && !_isExpanded
-                        ? SizedBox()
-                        : Text(widget.text,
-                            maxLines: _isExpanded ? null : widget.lines,
-                            style: widget.textStyle,
-                            textAlign: widget.textAlign,
-                            textDirection: widget.textDirection,
-                            locale: widget.locale,
-                            textScaleFactor: widget.textScaleFactor,
-                            textWidthBasis: widget.textWidthBasis),
-                    SizedBox(
-                      width: double.infinity,
-                      child: widget.arrowWidgetBuilder != null
-                          ? GestureDetector(
-                              behavior: HitTestBehavior.translucent,
-                              onTap: _onTap,
-                              child: widget.arrowWidgetBuilder(_isExpanded),
-                            )
-                          : ExpandArrow(
-                              onPressed: (_) => _onTap(),
-                              size: widget.arrowSize,
-                              color: widget.arrowColor,
-                              isExpanded: _isExpanded,
-                            ),
-                    )
-                  ],
-                ));
+                child: widget.expandMode == _ExpandMode.Manual
+                    ? _buildManual()
+                    : _buildAuto());
         },
       ),
     );
   }
 
-  Text _buildText() {
+  /// build manual
+  _buildManual() {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: double.infinity),
+      child: !widget.expand
+          ? SizedBox(
+              width: double.infinity,
+              height: 0,
+            )
+          : _buildText(),
+    );
+  }
+
+  /// build auto
+  _buildAuto() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        widget.expandMode == _ExpandMode.ShowHide && !_isExpanded
+            ? SizedBox()
+            : _buildText(maxLines: _isExpanded ? null : widget.lines),
+        SizedBox(
+          width: double.infinity,
+          child: widget.arrowWidgetBuilder != null
+              ? GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: _onTap,
+                  child: widget.arrowWidgetBuilder(_isExpanded),
+                )
+              : ExpandArrow(
+                  onPressed: (_) => _onTap(),
+                  size: widget.arrowSize,
+                  color: widget.arrowColor,
+                  isExpanded: _isExpanded,
+                ),
+        )
+      ],
+    );
+  }
+
+  ///build text with given max lines limit
+  Text _buildText({int maxLines}) {
     return Text(widget.text,
+        maxLines: maxLines,
         style: widget.textStyle,
         textAlign: widget.textAlign,
         textDirection: widget.textDirection,

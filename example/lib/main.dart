@@ -24,13 +24,15 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   final _text =
       '''Flutter is Google’s UI toolkit for building beautiful, natively compiled applications for mobile, web, and desktop from a single codebase.
   Paint your app to life in milliseconds with Stateful Hot Reload. Use a rich set of fully-customizable widgets to build native interfaces in minutes.
   Quickly ship features with a focus on native end-user experiences. Layered architecture allows for full customization, which results in incredibly fast rendering and expressive and flexible designs.''';
 
   final _arrowHeight = 30.0;
+
+  bool _showManual = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,48 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Text(
+                "ˇˇˇˇˇˇˇˇ Manual Control ˇˇˇˇˇˇˇˇ",
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Text("---- expandable widget(manual) ----"),
+            ),
+            ExpandableWidget.manual(
+                expand: _showManual,
+                vsync: this,
+                child: Container(
+                  color: Colors.blue,
+                  height: 100,
+                  width: 100,
+                  alignment: Alignment.center,
+                  child: Text("show hide"),
+                )),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Text("---- expandable text(manual) ----"),
+            ),
+            ExpandableText.manual(
+              _text,
+              vsync: this,
+              expand: _showManual,
+            ),
+            FlatButton(
+              color: Colors.grey[300],
+              onPressed: () => setState(() => _showManual = !_showManual),
+              child: Text("Toggle Manual"),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Text(
+                "ˇˇˇˇˇˇˇˇ Auto Control ˇˇˇˇˇˇˇˇ",
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 15),
               child: Text("---- expandable widget(showHide) ----"),
