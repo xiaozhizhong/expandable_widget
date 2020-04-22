@@ -1,7 +1,7 @@
 name: expandable_widget
 description: A Flutter package that provides expandable widget and text.
-version: 1.0.4
-homepage: https://github.com/xiaozhizhong/merge_images
+version: 1.0.5
+homepage: https://github.com/xiaozhizhong/expandable_widget
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
