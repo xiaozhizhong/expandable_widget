@@ -16,13 +16,31 @@ A Flutter package provides expandable widget and text.
 * Specify max height/lines that shows at the beginning.
 * Custom arrow widget.
 * Specify default expand status.
+* Manual or auto control the expand status.
 
 ## Usage
 
 ### ExpandableWidget
+
+* **ExpandableWidget.manual**
+Manual control.
+Show and hide child completely.
+``` dart 
+ExpandableWidget.manual(
+                expand: _showManual,
+                vsync: this,
+                child: Container(
+                  color: Colors.blue,
+                  height: 100,
+                  width: 100,
+                  alignment: Alignment.center,
+                  child: Text("show hide"),
+                ))
+```
+
 * **ExpandableWidget.showHide**
-Show and hide widget.
-Use this if you want to hide child completely at the beginning.
+Auto control, with an arrow widget at the bottom.
+Show and hide child completely.
 ``` dart
 ExpandableWidget.showHide(
         child: Container(
@@ -36,8 +54,8 @@ ExpandableWidget.showHide(
 *In this case, will only show an expand arrow at the beginning. When clicked the expand arrow, child expanded and showed.*
 
 * **ExpandableWidget.maxHeight**
-
-    Use this if you want to show a max-height child at the beginning.
+Auto control, with an arrow widget at the bottom.
+Collapse child to max-height.
 If the child's height < maxHeight, then will show child directly
 ``` dart 
 ExpandableWidget.maxHeight(
@@ -58,9 +76,20 @@ Note: If you specified a custom arrow widget, you should also provide the height
 
 ### ExpandableText
 
-* **ExpandableText.showHide**
+* **ExpandableText.manual**
+Manual control.
+Show and hide text completely.
+``` dart
+ExpandableText.manual(
+              _text,
+              vsync: this,
+              expand: _showManual,
+            ),
+```
 
-    Use this if you want to hide text completely at the beginning.
+* **ExpandableText.showHide**
+Auto control, with an arrow widget at the bottom.
+Show and hide text completely.
 ``` dart
     ExpandableText.showHide(
               "your text to show...",
@@ -69,8 +98,8 @@ Note: If you specified a custom arrow widget, you should also provide the height
 In this case, will only show an expand arrow at the beginning. When clicked the expand arrow, text expanded and showed.
 
 * **ExpandableText.lines**
-
-    Use this if you want to show a max-lines text at the beginning.
+Auto control, with an arrow widget at the bottom.
+Collapse child to max-lines.
 If the text's lines < maxLines, then will show text directly.
 ``` dart
 ExpandableText.lines(
@@ -81,8 +110,12 @@ ExpandableText.lines(
 ```
 In this case, will show a 4 lines text and an expand arrow at the beginning. When clicked the expand arrow, text expanded to it full lines.
 
-## Important Changes
+## Breaking Changes
 
 - add expand param
 
     From 1.0.3, you can specify default expand status by passing `expand` value.
+
+- add manual constructor
+
+    Form 1.0.4, you can control the expand status by using manual constructor and control it by `expand` value.
