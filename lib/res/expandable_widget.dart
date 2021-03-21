@@ -14,23 +14,23 @@ typedef ArrowBuilder = Widget Function(bool expand);
 
 class ExpandableWidget extends StatefulWidget {
   /// vsync provider for manual mode
-  final TickerProvider vsync;
+  final TickerProvider? vsync;
 
   ///In manual mode, it control the expand status
   ///In auto mode(ShowHide\MaxHeight), it decide Whether expand at the beginning or not, Default is false
   final bool expand;
 
   /// Color of the default arrow widget.
-  final Color arrowColor;
+  final Color? arrowColor;
 
   /// Size of the default arrow widget. Default is 24.
   final double arrowSize;
 
   /// Custom arrow widget builder, will using [ExpandArrow] if this is null.
-  final ArrowBuilder arrowWidgetBuilder;
+  final ArrowBuilder? arrowWidgetBuilder;
 
   /// If you use [arrowWidgetBuilder], you should provide the height of arrow widget manually
-  final double arrowWidgetHeight;
+  final double? arrowWidgetHeight;
 
   /// How long the expanding animation takes. Default is 150ms.
   final Duration animationDuration;
@@ -50,17 +50,17 @@ class ExpandableWidget extends StatefulWidget {
   ///Manual control
   ///Show and hide child completely.
   const ExpandableWidget.manual(
-      {@required this.expand,
-      @required this.vsync,
-      @required this.child,
+      {required this.expand,
+      required this.vsync,
+      required this.child,
       this.animationDuration = const Duration(milliseconds: 150),
       this.alignment = Alignment.topCenter,
-      Key key})
+      Key? key})
       : arrowColor = null,
-        arrowSize = null,
+        arrowSize = 24,
         arrowWidgetBuilder = null,
         arrowWidgetHeight = null,
-        maxHeight = null,
+        maxHeight = -1,
         mode = _ExpandMode.Manual,
         super(key: key);
 
@@ -68,13 +68,13 @@ class ExpandableWidget extends StatefulWidget {
   ///Show and hide child completely
   ///With a arrow at the bottom.
   const ExpandableWidget.showHide({
-    Key key,
+    Key? key,
     this.arrowColor,
     this.arrowSize = 24,
     this.arrowWidgetBuilder,
     this.arrowWidgetHeight,
     this.animationDuration = const Duration(milliseconds: 150),
-    @required this.child,
+    required this.child,
     this.expand = false,
     this.alignment = Alignment.topCenter,
   })  : vsync = null,
@@ -87,13 +87,13 @@ class ExpandableWidget extends StatefulWidget {
   ///With a arrow at the bottom.
   ///If the child's height < [maxHeight], then will show child directly
   const ExpandableWidget.maxHeight({
-    Key key,
+    Key? key,
     this.arrowColor,
     this.arrowSize = 24,
     this.arrowWidgetBuilder,
     this.arrowWidgetHeight,
     this.animationDuration = const Duration(milliseconds: 150),
-    @required this.child,
+    required this.child,
     this.maxHeight = 100.0,
     this.expand = false,
     this.alignment = Alignment.topCenter,
@@ -108,13 +108,13 @@ class ExpandableWidget extends StatefulWidget {
 class _ExpandableWidgetState extends State<ExpandableWidget>
     with SingleTickerProviderStateMixin {
   /// Expand status
-  bool _isExpanded;
+  late bool _isExpanded;
 
   /// The height of arrow
-  double _arrowHeight;
+  late double _arrowHeight;
 
   /// Whether is show hide Mode or max height mode.
-  bool _isShowHideMode;
+  late bool _isShowHideMode;
 
   final _key = UniqueKey();
 
@@ -143,7 +143,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
     return ClipRect(
       child: AnimatedSize(
         alignment: widget.alignment,
-        vsync: widget.vsync,
+        vsync: widget.vsync!,
         duration: widget.animationDuration,
         curve: Curves.easeInOut,
         child: AnimatedSwitcher(
@@ -159,10 +159,10 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
                       width: double.infinity,
                       height: 0,
                     )),
-          layoutBuilder: (Widget currentChild, List<Widget> previousChildren) {
+          layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
             List<Widget> children = previousChildren;
             if (currentChild != null) {
-              if (previousChildren == null || previousChildren.isEmpty)
+              if (previousChildren.isEmpty)
                 children = [currentChild];
               else {
                 children = [
@@ -180,7 +180,7 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
               }
             }
             return Stack(
-              overflow: Overflow.visible,
+              clipBehavior: Clip.none,
               children: children,
               alignment: widget.alignment,
             );
@@ -212,17 +212,18 @@ class _ExpandableWidgetState extends State<ExpandableWidget>
             ),
             Flexible(child: LayoutBuilder(
               builder: (_, size) {
-                final height = size.biggest.height;
+                final height = size.biggest.height,
+                    arrowWidgetBuilder = widget.arrowWidgetBuilder;
                 return _isShowHideMode ||
                         height <= _arrowHeight ||
                         height.isInfinite
                     ? SizedBox(
                         width: double.infinity,
-                        child: widget.arrowWidgetBuilder != null
+                        child: arrowWidgetBuilder != null
                             ? GestureDetector(
                                 behavior: HitTestBehavior.translucent,
                                 onTap: _onTap,
-                                child: widget.arrowWidgetBuilder(_isExpanded),
+                                child: arrowWidgetBuilder(_isExpanded),
                               )
                             : ExpandArrow(
                                 onPressed: (_) => _onTap(),
