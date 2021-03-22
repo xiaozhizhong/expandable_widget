@@ -13,8 +13,8 @@ class ExpandableText extends StatefulWidget {
   ///Manual control
   ///Show and hide text completely
   ExpandableText.manual(this.text,
-      {@required this.expand,
-      @required this.vsync,
+      {required this.expand,
+      required this.vsync,
       this.animationDuration = const Duration(milliseconds: 150),
       this.textStyle,
       this.strutStyle,
@@ -24,10 +24,10 @@ class ExpandableText extends StatefulWidget {
       this.textScaleFactor = 1,
       this.textWidthBasis = TextWidthBasis.parent,
       this.alignment = Alignment.topCenter,
-      Key key})
+      Key? key})
       : lines = null,
         arrowColor = null,
-        arrowSize = null,
+        arrowSize = 24,
         arrowWidgetBuilder = null,
         expandMode = _ExpandMode.Manual,
         super(key: key);
@@ -49,7 +49,7 @@ class ExpandableText extends StatefulWidget {
       this.textWidthBasis = TextWidthBasis.parent,
       this.expand = false,
       this.alignment = Alignment.topCenter,
-      Key key})
+      Key? key})
       : lines = null,
         vsync = null,
         expandMode = _ExpandMode.ShowHide,
@@ -59,7 +59,7 @@ class ExpandableText extends StatefulWidget {
   ///Collapse text to max lines.
   ///If the text's line < [maxLines], then will show text directly
   ExpandableText.lines(this.text,
-      {@required this.lines,
+      {required this.lines,
       this.arrowColor,
       this.arrowSize = 24,
       this.arrowWidgetBuilder,
@@ -73,31 +73,31 @@ class ExpandableText extends StatefulWidget {
       this.textWidthBasis = TextWidthBasis.parent,
       this.expand = false,
       this.alignment = Alignment.topCenter,
-      Key key})
+      Key? key})
       : vsync = null,
         expandMode = _ExpandMode.Lines,
         super(key: key);
 
   /// Color of the default arrow widget.
-  final Color arrowColor;
+  final Color? arrowColor;
 
   /// Size of the default arrow widget. Default is 24.
   final double arrowSize;
 
   /// Custom arrow widget builder, will using [ExpandArrow] if this is null.
-  final ArrowBuilder arrowWidgetBuilder;
+  final ArrowBuilder? arrowWidgetBuilder;
 
   /// How long the expanding animation takes. Default is 150ms.
   final Duration animationDuration;
 
   /// Set up collapse lines when show text in collapse mode
-  final int lines;
+  final int? lines;
 
   /// Text, should not be null
   final String text;
 
   /// Style of text
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
 
   ///In manual mode, it control the expand status
   ///In auto mode(showHide\lines), it decide Whether expand at the beginning or not, Default is false
@@ -107,13 +107,13 @@ class ExpandableText extends StatefulWidget {
   final Alignment alignment;
 
   /// vsync provider for manual mode
-  final TickerProvider vsync;
+  final TickerProvider? vsync;
 
   /// Other text parameters, see[Text]
-  final StrutStyle strutStyle;
+  final StrutStyle? strutStyle;
   final TextAlign textAlign;
   final TextDirection textDirection;
-  final Locale locale;
+  final Locale? locale;
   final double textScaleFactor;
   final TextWidthBasis textWidthBasis;
 
@@ -125,7 +125,7 @@ class ExpandableText extends StatefulWidget {
 
 class _ExpandableTextState extends State<ExpandableText>
     with SingleTickerProviderStateMixin {
-  bool _isExpanded;
+  late bool _isExpanded;
 
   @override
   void initState() {
@@ -179,6 +179,7 @@ class _ExpandableTextState extends State<ExpandableText>
 
   /// build auto
   _buildAuto() {
+    final arrowWidgetBuilder = widget.arrowWidgetBuilder;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -187,11 +188,11 @@ class _ExpandableTextState extends State<ExpandableText>
             : _buildText(maxLines: _isExpanded ? null : widget.lines),
         SizedBox(
           width: double.infinity,
-          child: widget.arrowWidgetBuilder != null
+          child: arrowWidgetBuilder != null
               ? GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: _onTap,
-                  child: widget.arrowWidgetBuilder(_isExpanded),
+                  child: arrowWidgetBuilder(_isExpanded),
                 )
               : ExpandArrow(
                   onPressed: (_) => _onTap(),
@@ -205,7 +206,7 @@ class _ExpandableTextState extends State<ExpandableText>
   }
 
   ///build text with given max lines limit
-  Text _buildText({int maxLines}) {
+  Text _buildText({int? maxLines}) {
     return Text(widget.text,
         maxLines: maxLines,
         style: widget.textStyle,

@@ -11,18 +11,15 @@ class ExpandArrow extends StatefulWidget {
   /// Creates an [ExpandArrow] with the given padding, and a callback that is
   /// triggered when the icon is pressed.
   const ExpandArrow({
-    Key key,
+    Key? key,
     this.isExpanded = false,
     this.size = 24.0,
-    @required this.onPressed,
+    required this.onPressed,
     this.padding = const EdgeInsets.all(8.0),
     this.color,
     this.disabledColor,
     this.expandedColor,
-  })  : assert(isExpanded != null),
-        assert(size != null),
-        assert(padding != null),
-        super(key: key);
+  }) : super(key: key);
 
   /// Whether the icon is in an expanded state.
   ///
@@ -39,7 +36,7 @@ class ExpandArrow extends StatefulWidget {
   /// between expanded and collapsed. The value passed to the current state.
   ///
   /// If this is set to null, the button will be disabled.
-  final ValueChanged<bool> onPressed;
+  final ValueChanged<bool>? onPressed;
 
   /// The padding around the icon. The entire padded icon will react to input
   /// gestures.
@@ -54,7 +51,7 @@ class ExpandArrow extends StatefulWidget {
   /// [Colors.white60] when it is [Brightness.dark]. This adheres to the
   /// Material Design specifications for [icons](https://material.io/design/iconography/system-icons.html#color)
   /// and for [dark theme](https://material.io/design/color/dark-theme.html#ui-application)
-  final Color color;
+  final Color? color;
 
   /// The color of the icon when it is disabled,
   /// i.e. if [onPressed] is null.
@@ -64,7 +61,7 @@ class ExpandArrow extends StatefulWidget {
   /// [Colors.white38] when it is [Brightness.dark]. This adheres to the
   /// Material Design specifications for [icons](https://material.io/design/iconography/system-icons.html#color)
   /// and for [dark theme](https://material.io/design/color/dark-theme.html#ui-application)
-  final Color disabledColor;
+  final Color? disabledColor;
 
   /// The color of the icon when the icon is expanded.
   ///
@@ -73,7 +70,7 @@ class ExpandArrow extends StatefulWidget {
   /// [Colors.white] when it is [Brightness.dark]. This adheres to the
   /// Material Design specifications for [icons](https://material.io/design/iconography/system-icons.html#color)
   /// and for [dark theme](https://material.io/design/color/dark-theme.html#ui-application)
-  final Color expandedColor;
+  final Color? expandedColor;
 
   @override
   _ExpandIconState createState() => _ExpandIconState();
@@ -81,8 +78,8 @@ class ExpandArrow extends StatefulWidget {
 
 class _ExpandIconState extends State<ExpandArrow>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _iconTurns;
+  late AnimationController _controller;
+  late Animation<double> _iconTurns;
 
   static final Animatable<double> _iconTurnTween =
       Tween<double>(begin: 0.0, end: 0.5)
@@ -119,7 +116,8 @@ class _ExpandIconState extends State<ExpandArrow>
   }
 
   void _handlePressed() {
-    if (widget.onPressed != null) widget.onPressed(widget.isExpanded);
+    final onPressed = widget.onPressed;
+    if (onPressed != null) onPressed(widget.isExpanded);
   }
 
   /// Default icon colors and opacities for when [Theme.brightness] is set to
@@ -129,11 +127,11 @@ class _ExpandIconState extends State<ExpandArrow>
   /// [Material Design dark theme specifications](https://material.io/design/color/dark-theme.html#ui-application)
   Color get _iconColor {
     if (widget.isExpanded && widget.expandedColor != null) {
-      return widget.expandedColor;
+      return widget.expandedColor!;
     }
 
     if (widget.color != null) {
-      return widget.color;
+      return widget.color!;
     }
 
     switch (Theme.of(context).brightness) {
@@ -142,9 +140,6 @@ class _ExpandIconState extends State<ExpandArrow>
       case Brightness.dark:
         return Colors.white60;
     }
-
-    assert(false);
-    return null;
   }
 
   @override

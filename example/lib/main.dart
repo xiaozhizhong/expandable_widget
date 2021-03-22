@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -75,8 +75,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               vsync: this,
               expand: _showManual,
             ),
-            FlatButton(
-              color: Colors.grey[300],
+            TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor: Colors.grey[300], primary: Colors.black),
               onPressed: () => setState(() => _showManual = !_showManual),
               child: Text("Toggle Manual"),
             ),
