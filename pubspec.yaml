@@ -1,6 +1,6 @@
 name: expandable_widget
 description: A Flutter package that provides expandable widget and text.
-version: 1.0.5
+version: 2.0.0-nullsafety
 homepage: https://github.com/xiaozhizhong/expandable_widget
 
 environment:

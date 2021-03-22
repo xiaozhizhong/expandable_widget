@@ -22,3 +22,7 @@
 ## [1.0.5] - 2020/4/22
 
 * fix github link.
+
+## [2.0.0-nullsafety] - 2021/3/22
+
+* support null-safety.
